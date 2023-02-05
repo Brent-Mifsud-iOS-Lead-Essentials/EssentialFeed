@@ -10,6 +10,7 @@ import Foundation
 public final class RemoteFeedLoader {
     public enum Error: Swift.Error {
         case connectivity
+        case invalidData
     }
     
     private let url: URL
@@ -21,8 +22,12 @@ public final class RemoteFeedLoader {
     }
     
     public func load(completion: @escaping (RemoteFeedLoader.Error) -> Void) {
-        client.get(from: url) { clientError in
-            completion(.connectivity)
+        client.get(from: url) { clientError, httpResponse in
+            if let httpResponse, httpResponse.statusCode != 200 {
+                completion(.invalidData)
+            } else {
+                completion(.connectivity)
+            }
         }
     }
 }
