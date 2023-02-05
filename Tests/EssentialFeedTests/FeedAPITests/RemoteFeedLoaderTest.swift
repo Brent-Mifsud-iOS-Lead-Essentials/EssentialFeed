@@ -15,14 +15,15 @@ import EssentialFeed
 
 final class RemoteFeedLoaderTest: XCTestCase {
     private class HTTPClientSpy: HTTPClient {
-        private var messages = [(url: URL, completion: (Error) -> Void)]()
+        typealias Message = (url: URL, completion: (Error) -> Void)
+        private var messages = [Message]()
         
         var requestedURLs: [URL] {
             messages.map(\.url)
         }
         
         func get(from url: URL, completion: @escaping (Error) -> Void) {
-            messages.append((url, completion))
+            messages.append(Message(url: url, completion: completion))
         }
         
         func complete(with error: Error, at index: Int = 0) {
