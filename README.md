@@ -3,7 +3,7 @@ iOS Lead Essentials Feed Framework
 
 # Image Feed Requirements
 
-![Feed Architecture](../../feed-architecture.png)
+![Feed Architecture](feed-architecture.png)
 
 # User Story
 
