@@ -77,6 +77,27 @@ final class RemoteFeedLoaderTest: XCTestCase {
         }
     }
     
+    func test_load_deliversFeedItemsOn200HTTPResponseWithJSONItems() {
+        let (sut, client) = makeSUT()
+		
+		let feedItems = [
+			FeedItem(id: .init(), description: nil, location: nil, imageURL: URL(string: "http://a-url.com")!),
+			FeedItem(id: .init(), description: "A description", location: nil, imageURL: URL(string: "http://a-url.com")!),
+			FeedItem(id: .init(), description: nil, location: "A location", imageURL: URL(string: "http://a-url.com")!),
+			FeedItem(id: .init(), description: "A description", location: "A location", imageURL: URL(string: "http://a-url.com")!),
+		]
+		
+		expect(sut, toCompleteWith: .success(feedItems)) {
+			do {
+				let jsonData = try JSONEncoder().encode(FeedResponse(items: feedItems))
+				client.complete(withStatusCode: 200, data: jsonData, at: 0)
+			} catch {
+				XCTFail("Failed to serialize JSON: \(error)")
+				return
+			}
+        }
+    }
+    
     // MARK: - Helpers
     
     private func makeSUT(url: URL = URL(string: "https://a-url.com")!) -> (sut: RemoteFeedLoader, client: HTTPClientSpy) {
