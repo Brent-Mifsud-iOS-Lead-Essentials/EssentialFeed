@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 public final class RemoteFeedLoader: FeedLoader {
-	public typealias Result = FeedResult<RemoteFeedLoader.Error>
+	public typealias Result = FeedResult
 	
 	public enum Error: Swift.Error {
 		case connectivity
@@ -32,7 +32,7 @@ public final class RemoteFeedLoader: FeedLoader {
 			case let .success((data, httpResponse)):
 				completion(FeedItemMapper.map(data, from: httpResponse))
 			case .failure:
-				completion(.failure(.connectivity))
+				completion(.failure(Error.connectivity))
 			}
 		}
 	}
