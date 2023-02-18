@@ -8,8 +8,9 @@
 import Foundation
 import SwiftUI
 
-public typealias RemoteFeedLoaderResult = Result<[FeedItem], RemoteFeedLoader.Error>
 public final class RemoteFeedLoader {
+	public typealias Result = FeedResult<RemoteFeedLoader.Error>
+	
 	public enum Error: Swift.Error {
 		case connectivity
 		case invalidData
@@ -23,7 +24,7 @@ public final class RemoteFeedLoader {
 		self.client = client
 	}
 	
-	public func load(completion: @escaping (RemoteFeedLoaderResult) -> Void) {
+	public func load(completion: @escaping (Result) -> Void) {
 		client.get(from: url) { [weak self] httpClientResponse in
 			guard self != nil else { return }
 			
