@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct FeedResponse: Codable {
+public struct FeedResponse: Decodable {
 	public let items: [FeedItem]
 	
 	public init(items: [FeedItem]) {
@@ -15,7 +15,7 @@ public struct FeedResponse: Codable {
 	}
 }
 
-public struct FeedItem: Equatable, Codable {
+public struct FeedItem: Equatable, Decodable {
 	public let id: UUID
 	public let description: String?
 	public let location: String?
@@ -26,5 +26,12 @@ public struct FeedItem: Equatable, Codable {
 		self.description = description
 		self.location = location
 		self.imageURL = imageURL
+	}
+	
+	private enum CodingKeys: String, CodingKey {
+		case id
+		case description
+		case location
+		case imageURL = "image"
 	}
 }
