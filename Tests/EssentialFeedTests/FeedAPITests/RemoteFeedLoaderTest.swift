@@ -53,7 +53,7 @@ final class RemoteFeedLoaderTest: XCTestCase {
 			expect(sut, toCompleteWith: .failure(.invalidData)) {
 				client.complete(
 					withStatusCode: statusCode,
-					data: #"{"items": []}"#.data(using: .utf8)!,
+					data: makeItemsJSON([]),
 					at: index
 				)
 			}
@@ -65,8 +65,7 @@ final class RemoteFeedLoaderTest: XCTestCase {
 		let (sut, client) = makeSUT()
 		
 		expect(sut, toCompleteWith: .failure(.invalidData)) {
-			var invalidJSON = Data()
-			invalidJSON.append(contentsOf: "invalid json".utf8)
+			let invalidJSON = "invalid json".data(using: .utf8)!
 			client.complete(withStatusCode: 200, data: invalidJSON)
 		}
 	}
@@ -75,9 +74,7 @@ final class RemoteFeedLoaderTest: XCTestCase {
 		let (sut, client) = makeSUT()
 		
 		expect(sut, toCompleteWith: .success([])) {
-			var emptyListJSON = Data()
-			emptyListJSON.append(contentsOf: #"{"items": []}"#.utf8)
-			client.complete(withStatusCode: 200, data: emptyListJSON, at: 0)
+			client.complete(withStatusCode: 200, data: makeItemsJSON([]), at: 0)
 		}
 	}
 	
@@ -91,16 +88,9 @@ final class RemoteFeedLoaderTest: XCTestCase {
 			FeedItem(id: .init(), description: "A description", location: "A location", imageURL: URL(string: "http://a-url.com")!),
 		]
 		
-		let jsonDict = ["items": feedItems.map(\.asDictionary)]
-		
 		expect(sut, toCompleteWith: .success(feedItems)) {
-			do {
-				let jsonData = try JSONSerialization.data(withJSONObject: jsonDict)
-				client.complete(withStatusCode: 200, data: jsonData, at: 0)
-			} catch {
-				XCTFail("Failed to serialize JSON: \(error)")
-				return
-			}
+			let jsonData = makeItemsJSON(feedItems)
+			client.complete(withStatusCode: 200, data: jsonData, at: 0)
 		}
 	}
 	
@@ -127,38 +117,8 @@ final class RemoteFeedLoaderTest: XCTestCase {
 		XCTAssertEqual(capturedResults, [result], file: file, line: line)
 	}
 	
-	private class HTTPClientSpy: HTTPClient {
-		typealias Message = (
-			url: URL,
-			completion: (HTTPClientResult) -> Void
-		)
-		private var messages = [Message]()
-		
-		var requestedURLs: [URL] {
-			messages.map(\.url)
-		}
-		
-		func get(
-			from url: URL,
-			completion: @escaping (HTTPClientResult) -> Void
-		) {
-			messages.append(Message(url: url, completion: completion))
-		}
-		
-		func complete(with error: Error, at index: Int = 0) {
-			messages[index].completion(.failure(error))
-		}
-		
-		func complete(withStatusCode statusCode: Int, data: Data, at index: Int = 0) {
-			let httpResponse = HTTPURLResponse(
-				url: requestedURLs[index],
-				statusCode: statusCode,
-				httpVersion: nil,
-				headerFields: nil
-			)!
-			
-			messages[index].completion(.success((data, httpResponse)))
-		}
+	private func makeItemsJSON(_ feedItems: [FeedItem]) -> Data {
+		try! JSONSerialization.data(withJSONObject: ["items": feedItems.map(\.asDictionary)])
 	}
 }
 
@@ -170,5 +130,39 @@ extension FeedItem {
 			"location": location,
 			"image": imageURL.absoluteString
 		].compactMapValues { $0 }
+	}
+}
+
+private class HTTPClientSpy: HTTPClient {
+	typealias Message = (
+		url: URL,
+		completion: (HTTPClientResult) -> Void
+	)
+	private var messages = [Message]()
+	
+	var requestedURLs: [URL] {
+		messages.map(\.url)
+	}
+	
+	func get(
+		from url: URL,
+		completion: @escaping (HTTPClientResult) -> Void
+	) {
+		messages.append(Message(url: url, completion: completion))
+	}
+	
+	func complete(with error: Error, at index: Int = 0) {
+		messages[index].completion(.failure(error))
+	}
+	
+	func complete(withStatusCode statusCode: Int, data: Data, at index: Int = 0) {
+		let httpResponse = HTTPURLResponse(
+			url: requestedURLs[index],
+			statusCode: statusCode,
+			httpVersion: nil,
+			headerFields: nil
+		)!
+		
+		messages[index].completion(.success((data, httpResponse)))
 	}
 }
