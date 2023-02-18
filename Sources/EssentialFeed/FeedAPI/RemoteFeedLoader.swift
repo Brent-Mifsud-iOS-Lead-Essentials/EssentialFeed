@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 
-public final class RemoteFeedLoader {
+public final class RemoteFeedLoader: FeedLoader {
 	public typealias Result = FeedResult<RemoteFeedLoader.Error>
 	
 	public enum Error: Swift.Error {
