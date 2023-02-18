@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 
+public typealias RemoteFeedLoaderResult = Result<[FeedItem], RemoteFeedLoader.Error>
 public final class RemoteFeedLoader {
     public enum Error: Swift.Error {
         case connectivity
@@ -22,13 +23,13 @@ public final class RemoteFeedLoader {
         self.client = client
     }
     
-    public func load(completion: @escaping (RemoteFeedLoader.Error) -> Void) {
+    public func load(completion: @escaping (RemoteFeedLoaderResult) -> Void) {
         client.get(from: url) { httpClientResponse in
             switch httpClientResponse {
-            case .success:
-                completion(.invalidData)
+            case let .success((_, httpResponse)):
+                completion(.failure(.invalidData))
             case .failure:
-                completion(.connectivity)
+                completion(.failure(.connectivity))
             }
         }
     }
