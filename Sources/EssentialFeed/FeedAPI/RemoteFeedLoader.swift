@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 public final class RemoteFeedLoader {
     public enum Error: Swift.Error {
