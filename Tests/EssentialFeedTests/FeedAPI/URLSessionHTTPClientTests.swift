@@ -64,16 +64,22 @@ final class URLSessionHTTPClientTests: XCTestCase {
 		XCTAssertEqual(recievedError?.code, requestError.code)
 	}
 	
-	func test_getFromURL_failsOnAllNilValues() {
-		let recievedError = resultErrorFor(data: nil, response: nil, error: nil)
-		XCTAssertNotNil(recievedError)
+	func test_getFromURL_failsOnAllInvalidRepresentationCases() {
+		let anyData = Data(repeating: 5, count: 5)
+		let anyError = NSError(domain: "any error", code: 0)
+		let nonHTTPURLResponse = URLResponse(url: getAnyURL(), mimeType: nil, expectedContentLength: 0, textEncodingName: nil)
+		let anyHTTPURLResponse = HTTPURLResponse(url: getAnyURL(), statusCode: 200, httpVersion: nil, headerFields: nil)
 		
-		guard let clientError = recievedError as? URLSessionHTTPClient.Error else {
-			XCTFail("Expected URLSesstionHTTPClient.Error. Got \(String(describing: recievedError))")
-			return
-		}
-		
-		XCTAssertEqual(clientError, URLSessionHTTPClient.Error.unknown)
+		XCTAssertNotNil(resultErrorFor(data: nil, response: nil, error: nil))
+		XCTAssertNotNil(resultErrorFor(data: nil, response: nonHTTPURLResponse, error: nil))
+		XCTAssertNotNil(resultErrorFor(data: nil, response: anyHTTPURLResponse, error: nil))
+		XCTAssertNotNil(resultErrorFor(data: anyData, response: nil, error: nil))
+		XCTAssertNotNil(resultErrorFor(data: anyData, response: nil, error: anyError))
+		XCTAssertNotNil(resultErrorFor(data: nil, response: nonHTTPURLResponse, error: anyError))
+		XCTAssertNotNil(resultErrorFor(data: nil, response: anyHTTPURLResponse, error: anyError))
+		XCTAssertNotNil(resultErrorFor(data: anyData, response: nonHTTPURLResponse, error: anyError))
+		XCTAssertNotNil(resultErrorFor(data: anyData, response: anyHTTPURLResponse, error: anyError))
+		XCTAssertNotNil(resultErrorFor(data: anyData, response: nonHTTPURLResponse, error: nil))
 	}
 	
 	private func makeSUT(file: StaticString = #filePath, line: UInt = #line) -> URLSessionHTTPClient {
