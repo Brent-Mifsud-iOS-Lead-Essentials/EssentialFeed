@@ -24,7 +24,7 @@ class URLSessionHTTPClient: HTTPClient {
 			if let error {
 				completion(.failure(error))
 				return
-			} else if let data, data.count > 0, let response = response as? HTTPURLResponse {
+			} else if let data, let response = response as? HTTPURLResponse {
 				completion(.success((data, response)))
 			} else {
 				completion(.failure(Error.unknown))
@@ -69,7 +69,6 @@ final class URLSessionHTTPClientTests: XCTestCase {
 	func test_getFromURL_failsOnAllInvalidRepresentationCases() {
 		XCTAssertNotNil(resultErrorFor(data: nil, response: nil, error: nil))
 		XCTAssertNotNil(resultErrorFor(data: nil, response: anyURLResponse(), error: nil))
-		XCTAssertNotNil(resultErrorFor(data: nil, response: anyHTTPURLResponse(), error: nil))
 		XCTAssertNotNil(resultErrorFor(data: anyData(), response: nil, error: nil))
 		XCTAssertNotNil(resultErrorFor(data: anyData(), response: nil, error: anyNSError()))
 		XCTAssertNotNil(resultErrorFor(data: nil, response: anyURLResponse(), error: anyNSError()))
@@ -90,6 +89,29 @@ final class URLSessionHTTPClientTests: XCTestCase {
 			switch result {
 			case let .success((recievedData, recievedResponse)):
 				XCTAssertEqual(recievedData, data)
+				XCTAssertEqual(recievedResponse.url, response.url)
+				XCTAssertEqual(recievedResponse.statusCode, response.statusCode)
+			case let .failure(error):
+				XCTFail("Expected successful response, but got error: \(error)")
+			}
+			
+			exp.fulfill()
+		}
+		
+		wait(for: [exp], timeout: 1.0)
+	}
+	
+	func test_getFromURL_suceedsOnHTTPURLResponseWithNilData() {
+		let response = anyHTTPURLResponse()
+		URLProtocolStub.stub(data: nil, response: response, error: nil)
+		
+		let exp = expectation(description: "wait for completion")
+		
+		makeSUT().get(from: anyURL()) { result in
+			switch result {
+			case let .success((recievedData, recievedResponse)):
+				let emptyData = Data()
+				XCTAssertEqual(recievedData, emptyData)
 				XCTAssertEqual(recievedResponse.url, response.url)
 				XCTAssertEqual(recievedResponse.statusCode, response.statusCode)
 			case let .failure(error):
