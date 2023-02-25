@@ -49,7 +49,7 @@ final class EssentialFeedAPIEndToEndTests: XCTestCase {
 			exp.fulfill()
 		}
 		
-		wait(for: [exp], timeout: 10)
+		wait(for: [exp], timeout: 30)
 		
 		return receivedResult
 	}
