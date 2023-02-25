@@ -14,23 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EssentialFeed"
-               BuildableName = "EssentialFeed"
-               BlueprintName = "EssentialFeed"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EssentialFeedTests"
-               BuildableName = "EssentialFeedTests"
-               BlueprintName = "EssentialFeedTests"
+               BlueprintIdentifier = "EssentialFeedTestHelpers"
+               BuildableName = "EssentialFeedTestHelpers"
+               BlueprintName = "EssentialFeedTestHelpers"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -40,31 +26,8 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES"
-      onlyGenerateCoverageForSpecifiedTargets = "YES">
-      <CodeCoverageTargets>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EssentialFeed"
-            BuildableName = "EssentialFeed"
-            BlueprintName = "EssentialFeed"
-            ReferencedContainer = "container:">
-         </BuildableReference>
-      </CodeCoverageTargets>
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES"
-            testExecutionOrdering = "random">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "EssentialFeedTests"
-               BuildableName = "EssentialFeedTests"
-               BlueprintName = "EssentialFeedTests"
-               ReferencedContainer = "container:">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -87,9 +50,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "EssentialFeed"
-            BuildableName = "EssentialFeed"
-            BlueprintName = "EssentialFeed"
+            BlueprintIdentifier = "EssentialFeedTestHelpers"
+            BuildableName = "EssentialFeedTestHelpers"
+            BlueprintName = "EssentialFeedTestHelpers"
             ReferencedContainer = "container:">
          </BuildableReference>
       </MacroExpansion>
