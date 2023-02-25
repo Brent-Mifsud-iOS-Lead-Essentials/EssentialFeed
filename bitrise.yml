@@ -1,0 +1,23 @@
+format_version: "11"
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: other
+workflows:
+  primary:
+    steps:
+    - activate-ssh-key@4: {}
+    - git-clone@7: {}
+    - deploy-to-bitrise-io@2: {}
+    - script@1:
+        inputs:
+        - runner_bin: /bin/zsh
+        - content: "xcodebuild clean \\\n    build \\\n    test \\\n    -scheme \"CI\" \\\n    -destination \"platform=macOS\" \\\n    CODE_SIGN_IDENTITY=\"\" \\\n    CODE_SIGNING_REQUIRED=NO "
+meta:
+  bitrise.io:
+    stack: osx-xcode-14.2.x-ventura
+    machine_type_id: g2-m1.4core
+trigger_map:
+- push_branch: main
+  workflow: primary
+- pull_request_source_branch: '*'
+  workflow: primary
+  pull_request_target_branch: main
