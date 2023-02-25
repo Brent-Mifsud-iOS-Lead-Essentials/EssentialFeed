@@ -2,7 +2,7 @@ format_version: "11"
 default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
 project_type: other
 workflows:
-  primary:
+  ci:
     steps:
     - activate-ssh-key@4: {}
     - git-clone@7: {}
@@ -17,7 +17,7 @@ meta:
     machine_type_id: g2-m1.4core
 trigger_map:
 - push_branch: main
-  workflow: primary
+  workflow: ci
 - pull_request_source_branch: '*'
-  workflow: primary
+  workflow: ci
   pull_request_target_branch: main
