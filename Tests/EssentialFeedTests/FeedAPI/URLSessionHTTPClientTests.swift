@@ -16,8 +16,11 @@ class URLSessionHTTPClient: HTTPClient {
 	}
 	
 	func get(from url: URL, completion: @escaping (EssentialFeed.HTTPClientResult) -> Void) {
-		session.dataTask(with: url) { _, _, _ in
-			
+		session.dataTask(with: url) { _, _, error in
+			if let error {
+				completion(.failure(error))
+				return
+			}
 		}.resume()
 	}
 }
@@ -30,25 +33,58 @@ final class URLSessionHTTPClientTests: XCTestCase {
 		session.stub(url: url, task: task)
 		let sut = URLSessionHTTPClient(session: session)
 		sut.get(from: url) { _ in }
+		
 		XCTAssertEqual(task.resumeCallCount, 1)
+	}
+	
+	func test_getFromURL_failsOnRequestError() {
+		let url = URL(string: "http://any-url.com")!
+		let error = NSError(domain: "Test", code: 1)
+		let session = URLSessionSpy()
+		let task = URLSessionDataTaskSpy()
+		session.stub(url: url, task: task, error: error)
+		let sut = URLSessionHTTPClient(session: session)
+		
+		let exp = expectation(description: "Wait for completion")
+		
+		sut.get(from: url) { result in
+			switch result {
+			case let .failure(recievedError as NSError):
+				XCTAssertEqual(error, recievedError)
+			default:
+				XCTFail("Expected failure with error \(error), got \(result) instead")
+			}
+			
+			exp.fulfill()
+		}
+		
+		wait(for: [exp], timeout: 1.0)
 	}
 }
 
 // MARK: - Helpers
 
 private class URLSessionSpy: URLSession {
-	var receivedURLs = [URL]()
-	private var stubs = [URL: URLSessionDataTask]()
+	private struct Stub {
+		let task: URLSessionDataTask
+		let error: Error?
+	}
+	
+	private var stubs = [URL: Stub]()
 	
 	override init() {}
 	
-	func stub(url: URL, task: URLSessionDataTask) {
-		stubs[url] = task
+	func stub(url: URL, task: URLSessionDataTask, error: Error? = nil) {
+		stubs[url] = Stub(task: task, error: error)
 	}
 	
 	override func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
-		receivedURLs.append(url)
-		return stubs[url] ?? FakeURLSessionDataTask()
+		guard let stub = stubs[url] else {
+			fatalError("Couldn't find stub for \(url)", file: #filePath, line: #line)
+		}
+		
+		completionHandler(nil, nil, stub.error)
+		return stub.task
 	}
 }
 
