@@ -7,6 +7,7 @@
 
 import XCTest
 import EssentialFeed
+import EssentialFeedTestHelpers
 
 // Three As of testing
 // Arrange

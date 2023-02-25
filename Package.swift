@@ -17,6 +17,9 @@ let package = Package(
 		.library(
 			name: "EssentialFeed",
 			targets: ["EssentialFeed"]),
+		.library(
+			name: "EssentialFeedTestHelpers",
+			targets: ["EssentialFeedTestHelpers"]),
 	],
 	dependencies: [
 		// Dependencies declare other packages that this package depends on.
@@ -28,11 +31,14 @@ let package = Package(
 		.target(
 			name: "EssentialFeed",
 			dependencies: []),
+		.target(
+			name: "EssentialFeedTestHelpers",
+			dependencies: []),
 		.testTarget(
 			name: "EssentialFeedTests",
-			dependencies: ["EssentialFeed"]),
+			dependencies: ["EssentialFeed", "EssentialFeedTestHelpers"]),
 		.testTarget(
 			name: "EssentialFeedAPIEndToEndTests",
-			dependencies: ["EssentialFeed"]),
+			dependencies: ["EssentialFeed", "EssentialFeedTestHelpers"]),
 	]
 )

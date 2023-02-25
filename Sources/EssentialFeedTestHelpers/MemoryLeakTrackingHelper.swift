@@ -1,5 +1,5 @@
 //
-//  TestHelpers.swift
+//  MemoryLeakTrackingHelper.swift
 //  
 //
 //  Created by Brent Mifsud on 2023-02-25.
@@ -7,7 +7,7 @@
 
 import XCTest
 
-extension XCTestCase {
+public extension XCTestCase {
 	func trackForMemoryLeaks(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
 		addTeardownBlock { [weak instance] in
 			XCTAssertNil(
