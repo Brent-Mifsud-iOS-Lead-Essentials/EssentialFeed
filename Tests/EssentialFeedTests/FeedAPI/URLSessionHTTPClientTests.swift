@@ -8,31 +8,6 @@
 import XCTest
 import EssentialFeed
 
-class URLSessionHTTPClient: HTTPClient {
-	enum Error: Swift.Error {
-		case unknown
-	}
-	
-	private let session: URLSession
-	
-	init(session: URLSession = .shared) {
-		self.session = session
-	}
-	
-	func get(from url: URL, completion: @escaping (EssentialFeed.HTTPClientResult) -> Void) {
-		session.dataTask(with: url) { data, response, error in
-			if let error {
-				completion(.failure(error))
-				return
-			} else if let data, let response = response as? HTTPURLResponse {
-				completion(.success((data, response)))
-			} else {
-				completion(.failure(Error.unknown))
-			}
-		}.resume()
-	}
-}
-
 final class URLSessionHTTPClientTests: XCTestCase {
 	override func setUp() {
 		super.setUp()
@@ -61,7 +36,9 @@ final class URLSessionHTTPClientTests: XCTestCase {
 	
 	func test_getFromURL_failsOnRequestError() {
 		let requestError = anyNSError()
+		
 		let recievedError = resultErrorFor(data: nil, response: nil, error: requestError) as? NSError
+		
 		XCTAssertEqual(recievedError?.domain, requestError.domain)
 		XCTAssertEqual(recievedError?.code, requestError.code)
 	}
@@ -80,10 +57,10 @@ final class URLSessionHTTPClientTests: XCTestCase {
 	
 	func test_getFromURL_succeedsOnHTTPURLResponseWithData() {
 		let data = anyData()
-		
 		let response = anyHTTPURLResponse()
 		
 		let recievedResponse = resultValuesFor(data: data, response: response, error: nil)
+		
 		XCTAssertEqual(recievedResponse?.data, data)
 		XCTAssertEqual(recievedResponse?.response.url, response.url)
 		XCTAssertEqual(recievedResponse?.response.statusCode, response.statusCode)
