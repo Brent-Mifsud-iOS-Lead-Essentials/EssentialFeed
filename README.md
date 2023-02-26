@@ -1,5 +1,3 @@
-[![Build Status](https://app.bitrise.io/app/2286a568849c20be/status.svg?token=7AXjFbtq-bRIbN5FX52Hdw&branch=main)](https://app.bitrise.io/app/2286a568849c20be)
-
 # FeedFramework
 iOS Lead Essentials Feed Framework
 
